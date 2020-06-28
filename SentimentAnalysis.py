@@ -1,5 +1,5 @@
-#import pandas as pd
-#import numpy as np
+import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import time
@@ -39,11 +39,16 @@ classifiers = [
     #KNeighborsClassifier(5),
     SVC(), 
     #DecisionTreeClassifier(),
-    RandomForestClassifier(n_estimators=100),
+    #RandomForestClassifier(n_estimators=100),
     MLPClassifier(),
     MultinomialNB(),
-    #LogisticRegression()
+    LogisticRegression()
     ]
+
+# Additional test sentences
+
+
+# Test different combinations of vectorizer + classifier    
 for vectorizer in vectorizers:
     print ("*"*100)
     print(vectorizer.__class__.__name__)
@@ -77,6 +82,11 @@ for vectorizer in vectorizers:
         t1 = time.process_time()
         training_time = t1-t0
         print(training_time)
+
+
+
+
+
 
 
 

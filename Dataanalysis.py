@@ -1,8 +1,23 @@
 # Data Visualization 
+import pandas as pd 
+import numpy as np 
+
+def stemming(sent):
+    from nltk.stem import PorterStemmer
+    from nltk.tokenize import word_tokenize
+    porter=PorterStemmer()
+    token_words=word_tokenize(sent)
+    stem_sentence=[]
+    for word in token_words:
+        stem_sentence.append(porter.stem(word))
+        stem_sentence.append(" ")
+    return "".join(stem_sentence)
+        
+     
+        
 
 def readData_addSentiment():
-    import pandas as pd 
-    import numpy as np
+    
     # Read data
     df=pd.read_excel('../sentences_with_sentiment.xlsx')
     df=df.drop(columns=['ID'])
@@ -45,10 +60,10 @@ def countplot():
     plt.show()
     
 if __name__ == "__main__": 
-         
+     
     df=readData_addSentiment()
 
-    countplot()
+    #countplot()
     
 
     # Split Data
@@ -63,7 +78,12 @@ if __name__ == "__main__":
     stops_eng.remove("not")
 
     # Word frequency analysis
-    #frequenceVisualization(df['Sentence'])
+    frequenceVisualization(df['Sentence'])
+    data=[stemming(sent) for sent in df['Sentence']]
+    df['stemmed']=pd.DataFrame(data)
+   
+    print(df.head(20))
+    frequenceVisualization(df['stemmed'])
     #frequenceVisualization(positive_sent_stmts)
     #frequenceVisualization(negative_sent_stmts)
     #frequenceVisualization(neutral_sent_stmts)
