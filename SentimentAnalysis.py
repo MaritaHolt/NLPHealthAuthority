@@ -4,17 +4,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import time
 from nltk.corpus import stopwords
-#from sklearn import datasets, svm, tree, metrics
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix #log_loss, 
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-#from sklearn.gaussian_process import GaussianProcessClassifier
-#from sklearn.gaussian_process.kernels import RBF
-#from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.pipeline import Pipeline
