@@ -7,7 +7,7 @@ def readData_addSentiment():
     df=pd.read_excel('../sentences_with_sentiment.xlsx')
     df=df.drop(columns=['ID'])
 
-    # Add an additional column Sentiment (Positive== 1, Negative == -1, Neutral == 0)
+    # Add an additional column Sentiment (Positive== 0, Negative == 1, Neutral == 2)
     sentiment=np.zeros((df.shape[0],1), dtype='i')
     for i in range(0,len(sentiment)):
         if df['Neutral'][i]==1:
