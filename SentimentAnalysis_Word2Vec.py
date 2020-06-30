@@ -4,20 +4,27 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import time
 
+
+from nltk.tokenize import word_tokenize
+
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import MultinomialNB, ComplementNB
 from sklearn.linear_model import LogisticRegression
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+
 from sklearn.pipeline import Pipeline
+
+import gensim
+from gensim.models.doc2vec import TaggedDocument, Doc2Vec
+
 
 from Dataanalysis import readData_addSentiment
 
 df=readData_addSentiment()
+
 
 
 # Extract relevant data
@@ -25,28 +32,47 @@ statements = df["clean_text"]
 labels = df["Sentiment"]
 
 # Choice for Text vectorization
-tfidfvectorizer = TfidfVectorizer(ngram_range=(1, 3))  
-countvectorizer = CountVectorizer(ngram_range=(1, 3))  
+class word2vecVectorizer(object):
+    def __init__(self):
+        self.model =  gensim.models.KeyedVectors.load_word2vec_format('../GoogleNews-vectors-negative300.bin', binary=True)
 
-vectorizers =[tfidfvectorizer, countvectorizer]
+    def transform(self, raw_documents, copy=True):
+        embedding_features = []
+        for sent in raw_documents:
+            sent = [x for x in sent.split(' ')]
+            for i in range(len(sent)):
+                sent[i] = self.model[sent[i]] if sent[i] in self.model.vocab else np.zeros(300)
+            embedding_features.append(np.array(np.mean(sent, axis=0)))
+
+        return np.asmatrix(embedding_features)
+
+    def fit(self, raw_documents,y=None):
+        return self
+        
+
+
+word2vecvectorizer=word2vecVectorizer()
+  
+
+
+vectorizers =[word2vecvectorizer] 
+
 
 # Choice of Classifiers
 classifiers = [
     #KNeighborsClassifier(5),
     LinearSVC(), 
-    #RandomForestClassifier(),
+    RandomForestClassifier(n_estimators=100, max_depth=3),
     MLPClassifier(solver='lbfgs'),
-    MultinomialNB(),
-    ComplementNB(),
     LogisticRegression()
     ]
 
-# Store results to txt
-file_results=open("Results_SentAna_BOW.txt","w")
 
+
+# Store results to txt
+file_results=open("Results_SentAna_2Vec.txt","w")
 # Set cross_validation
 crossValidation = True
-
 # Test different combinations of vectorizer + classifier    
 for vectorizer in vectorizers:
     file_results.write("*"*100+"\n")
@@ -62,7 +88,7 @@ for vectorizer in vectorizers:
         # Fit model and predict on test data
         t0 = time.process_time()
         if crossValidation == True:
-            score = cross_val_score(pipeline, statements, labels,cv=5, scoring='accuracy')
+            score = cross_val_score(pipeline, statements, labels,cv=5, scoring='f1_weighted')
             file_results.write("Score: " + np.array2string(score) + ", Mean: " + np.array2string(score.mean())+ "\n")
         else:
             # Split in train and test
@@ -71,12 +97,12 @@ for vectorizer in vectorizers:
             pipeline.fit(stmts_train, labels_train)
            
             predictions=pipeline.predict(stmts_test)
-            print(predictions)
+            
             # Result visualization
             cf = confusion_matrix(labels_test,predictions)
             file_results.write(np.array2string(cf, separator=', ')+"\n")
             sns_plot = sns.heatmap(cf, cmap="GnBu", annot=True, fmt='g')
-            sns_plot.get_figure().savefig("Heatmap"+vectorizer.__class__.__name__ +clf.__class__.__name__+".png")
+            sns_plot.get_figure().savefig("2VecHeatmap"+vectorizer.__class__.__name__ +clf.__class__.__name__+".png")
             plt.clf()
             clf_report=classification_report(labels_test,predictions, output_dict=True)
             file_results.write(pd.DataFrame(clf_report).transpose().to_string()+ "\n")
