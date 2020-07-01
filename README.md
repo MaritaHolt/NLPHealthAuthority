@@ -16,3 +16,6 @@ Comparison of TfidfVectorizer/CountVectorizer with Vectorizer based on Google's 
 Requires Google's pretrained list of words available at https://drive.google.com/uc?export=download&id=0B7XkCwpI5KDYNlNUTTlSS21pQmM
 - > Results are not better than with simple BOW. These vectorizer is thus thus not pursued any further 
 
+# Grid Search files
+Try to improve most promising models (LinearSVC, MultinomialNB, Logistic Regression) + CountVectorizer via GridSearch
+
