@@ -21,9 +21,9 @@ def sentimentanalysis_bow(statements, labels, scoringparameter, vectorizer):
     
     # Choice for Text vectorization
     if vectorizer=='tfidf':
-        vectorizer = TfidfVectorizer(ngram_range=(1, 2)) 
+        vectorizer = TfidfVectorizer() 
     else: 
-        vectorizer = CountVectorizer(ngram_range=(1, 2))  
+        vectorizer = CountVectorizer()  
 
     
 
@@ -62,12 +62,12 @@ if __name__=='__main__':
     from Dataanalysis import readData_addSentiment
     df=readData_addSentiment()
 
-    vectorizer='tfidf'
+    vectorizer='count'
     scoringparameter='accuracy'
 
     # Set directory for saving
     str1='Reports/'
-    file_results=open(str1+"Results_SentAna_BOW_tfidf_"+scoringparameter+".txt","w")
+    file_results=open(str1+"Results_SentAna_BOW_count_"+scoringparameter+".txt","w")
 
     col_names=["kNN", "LinSVC", "RF", "MLP", "MNB", "CNB", "LogReg"]
     scores=[]

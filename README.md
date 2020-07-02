@@ -6,6 +6,9 @@ Collection of Code for a sentiment analysis of EPARs based on single sentences
 - Clean Text (drop duplicates, remove punctation and digits, remove stop words, apply PorterStemmer)
 - Different options for data visualization (Countplot, Frequencycount)
 
+# Simple Classifier
+Naive Model which labels everything as Positive 
+
 # SentimentAnalysis
 Overwiew over the performance of different models
 - Text vectorization via TfidfVectorizer or CountVectorizer
@@ -18,4 +21,11 @@ Requires Google's pretrained list of words available at https://drive.google.com
 
 # Grid Search files
 Try to improve most promising models (LinearSVC, MultinomialNB, Logistic Regression) + CountVectorizer via GridSearch
+
+# Final Model
+A combination of all three classifiers with improved Hyperparameters
+Notification in case of unclear classification results possible
+
+# Reports
+Folder containing data produced by various experiments
 

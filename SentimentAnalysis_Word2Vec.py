@@ -46,7 +46,7 @@ def sentimentanalysis_word2vec(statements, labels, scoringparameter):
     classifiers = [
         #KNeighborsClassifier(5),
         LinearSVC(), 
-        RandomForestClassifier(n_estimators=100, max_depth=3),
+        RandomForestClassifier(),
         MLPClassifier(solver='lbfgs'),
         LogisticRegression()
         ]
@@ -71,7 +71,7 @@ if __name__=='__main__':
     df=readData_addSentiment()
 
     
-    scoringparameter='accuracy'
+    scoringparameter='f1_weighted'
 
     # Set directory for saving
     str1='Reports/'
@@ -80,7 +80,7 @@ if __name__=='__main__':
     col_names=["LinSVC", "RF", "MLP", "LogReg"] #"kNN", 
     scores=[]
     traintime=[]
-    for k in range(0,1):
+    for k in range(0,6):
         df=shuffle(df)
         # Extract relevant data
         statements = df["clean_text"]
