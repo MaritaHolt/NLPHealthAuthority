@@ -15,7 +15,7 @@ def gridsearch_lr(stmts_train, stmts_test, labels_train, labels_test, score):
     pipeline= Pipeline(steps=[('vec', vectorizer),('clf', clf)])
 
     param_grid = {
-        'clf__C': [1,100],
+        'clf__C': [0.1,1,10,100],
         'clf__class_weight': ['balanced', None, {0: 1, 1: 5, 2: 2}],
         'vec__ngram_range': [(1,1),(1,2)],
         'vec__max_df': [0.5]
@@ -44,7 +44,7 @@ if __name__=='__main__':
     for score in ['accuracy', 'f1_weighted']:
         file_results.write(score+"\n")
         results=[]
-        for k in range(0,11):
+        for k in range(0,100):
             df=shuffle(df)
             # Extract relevant data
             statements = df["clean_text"]
@@ -56,10 +56,9 @@ if __name__=='__main__':
             results.append([ scoregscv,test_acc,test_f1, param])
         
 
-            #file_results.write("Best score: "+str(scoregscv)+ ", test_acc: "+ str(test_acc)+", test_f1: "+str(test_f1)+", beastparams: "+ str(param)+"\n")
+            
      
         result=pd.DataFrame(results, columns=col_names)
-        #result.loc['mean'] = result['res_gscv', 'test_acc', 'test_f1'].mean()
         file_results.write(result.to_string()+ "\n")
 
 

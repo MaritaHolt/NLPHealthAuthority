@@ -64,10 +64,9 @@ if __name__=='__main__':
             scoregscv, param, test_acc, test_f1 = gridsearch_NB(stmts_train, stmts_test, labels_train, labels_test, score)
             results.append([ scoregscv,test_acc,test_f1, param])
 
-            #file_results.write("Best score: "+str(scoregscv)+", test_acc: "+ str(test_acc)+", test_f1: "+str(test_f1)+", beastparams: "+ str(param)+ "\n")
+            
         
         result=pd.DataFrame(results, columns=col_names)
-        #result.loc['mean'] = result['res_gscv', 'test_acc', 'test_f1'].mean()
         file_results.write(result.to_string()+ "\n")
         
 

@@ -17,7 +17,8 @@ def fit_NB(statements, labels):
     clf=MultinomialNB(fit_prior=True, alpha=1.3)
     pipeline_NB= Pipeline(steps=[('vectorizer', vectorizer),('classifier', clf)])
     pipeline_NB.fit(statements,labels)
-    return pipeline_NB
+    score = pipeline_NB.score(statements, labels)
+    return pipeline_NB, score
 
 
 def fit_LinSVC(statements, labels):
@@ -25,21 +26,19 @@ def fit_LinSVC(statements, labels):
     clf=LinearSVC(C=1.0, class_weight='balanced')
     pipeline_svm= Pipeline(steps=[('vectorizer', vectorizer),('classifier', clf)])
     pipeline_svm.fit(statements,labels)
-    return pipeline_svm
+    score = pipeline_svm.score(statements, labels)
+    return pipeline_svm, score
 
 def fit_Logreg(statements, labels):
     vectorizer=CountVectorizer(ngram_range=(1,2), max_df=0.5)
-    clf=LogisticRegression(C=0.1, class_weight='balanced')
+    clf=LogisticRegression(C=1.0, class_weight='balanced')
     pipeline_lr= Pipeline(steps=[('vectorizer', vectorizer),('classifier', clf)])
     pipeline_lr.fit(statements,labels)
-    return pipeline_lr
+    score = pipeline_lr.score(statements, labels)
+    return pipeline_lr, score
 
-def predict(statements, pipeline_1, pipeline_2, pipeline_3):
-    prediction_1=pipeline_1.predict(statements)
-    prediction_2=pipeline_2.predict(statements)
-    prediction_3=pipeline_3.predict(statements)
-    data = {'NB' : prediction_1, 'SVM' : prediction_2, 'LR' : prediction_3}
-    df_pred=pd.DataFrame(data=data)
+# Compare the results of all three classifiers and classify a sentence as 3 (dummy class) if all three classifiers disagree
+def compare(df_pred):
     
     pred=np.zeros((df_pred.shape[0],1), dtype='i')
     for i in range(0,len(pred)):
@@ -57,6 +56,21 @@ def predict(statements, pipeline_1, pipeline_2, pipeline_3):
 
     return df_pred
 
+# Analyze the probability results of the NB classifier and mark a sentence if the highest probability is less than 50%
+def compare2(df_pred, pred):
+    proba_pred=np.zeros((df_pred.shape[0],1), dtype='i')
+    for i in range(0,len(pred)):
+        if max(pred[i])<0.5:
+            proba_pred[i]=3
+        else:
+            proba_pred[i]=df_pred['NB'][i]
+
+    df_pred['Proba']=proba_pred
+
+    return df_pred
+
+
+
 
 if __name__=='__main__':
     # Read data
@@ -67,31 +81,49 @@ if __name__=='__main__':
     # Set directory for saving
     str1='Reports/'
     results=open(str1+"Results_SentAna.txt","w")
-    Prediction=open(str1+"Predictions_SentAna.txt", "w")
+    
     accuracy=[]
+    acc_proba_nb=[]
+    f1_proba_nb=[]
+    
     acc_nb=[]
     acc_svm=[]
     acc_lr=[]
+
     f1 = []
     f1_nb=[]
     f1_svm=[]
     f1_lr=[]
-    for k in range(0,10):
+    for k in range(0,400):
         df=shuffle(df)
         # Extract relevant data
         statements = df["clean_text"]
         labels = df["Sentiment"]
 
+        # Split Data
+        stmts_train, stmts_test, labels_train, labels_test = train_test_split(statements, labels, test_size=0.2)
+        # Fit models
+        pip_nb, score_nb = fit_NB(stmts_train, labels_train)
+        pip_svm, score_svm = fit_LinSVC(stmts_train, labels_train)
+        pip_lr, score_lr = fit_Logreg(stmts_train, labels_train)
 
-        stmts_train, stmts_test, labels_train, labels_test = train_test_split(statements, labels, test_size=0.2, random_state=0)
-
-        pip_nb=fit_NB(stmts_train, labels_train)
-        pip_svm=fit_LinSVC(stmts_train, labels_train)
-        pip_lr=fit_Logreg(stmts_train, labels_train)
         
+        # Predict on test set
+        prediction_1=pip_nb.predict(stmts_test)
+        prediction_1_proba=pip_nb.predict_proba(stmts_test)
+        prediction_2=pip_svm.predict(stmts_test)
+        prediction_3=pip_lr.predict(stmts_test)
         
-        df_pred = predict(stmts_test, pip_nb, pip_svm, pip_lr)
+        data = {'NB' : prediction_1, 'SVM' : prediction_2, 'LR' : prediction_3}
+        df_pred=pd.DataFrame(data=data)
+                   
+        # Two different approaches for unclear instances
+        df_pred = compare(df_pred)
+        df_pred = compare2(df_pred, prediction_1_proba)
         
+        # Evaluate performance
+        acc_proba_nb.append(accuracy_score(labels_test, df_pred['Proba']))
+        f1_proba_nb.append(f1_score(labels_test, df_pred['Proba'], average='weighted'))
 
         acc_nb.append(accuracy_score(labels_test, df_pred['NB']))
         f1_nb.append(f1_score(labels_test, df_pred['NB'], average='weighted'))
@@ -106,20 +138,46 @@ if __name__=='__main__':
         f1.append(f1_score(labels_test, df_pred['Pred'], average='weighted'))
 
        
+        # only for visualization of interesting settings
+        #if (not (df_pred.loc[df_pred['Proba']==3].empty)) and k<50:
+        #    cf = confusion_matrix(labels_test,df_pred['Pred'])
+        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_overall"+str(k)+".png")
+        #    plt.clf()
 
-        cf = confusion_matrix(labels_test,df_pred['Pred'])
-        sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
-        sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_overall"+str(k)+".png")
-        plt.clf()
+        #    cf = confusion_matrix(labels_test,df_pred['NB'])
+        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_NB"+str(k)+".png")
+        #    plt.clf()
+
+        #    cf = confusion_matrix(labels_test,df_pred['Proba'])
+        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_Proba"+str(k)+".png")
+        #    plt.clf()
+
+        #    cf = confusion_matrix(labels_test,df_pred['LR'])
+        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_LR"+str(k)+".png")
+        #    plt.clf()
+
+        #    cf = confusion_matrix(labels_test,df_pred['SVM'])
+        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_SVM"+str(k)+".png")
+        #    plt.clf()
        
 
         
 
-
-    data={ 'NB acc' : acc_nb, 'NB f1' : f1_nb, 'SVM acc' : acc_svm, 'SVM f1' : f1_svm,
-    'LR acc' : acc_lr, 'LR f1' : f1_lr,'Model acc' : accuracy, 'Model f1' : f1 }
+    # Store all results in a DataFrame
+    data={'NB acc_proba': acc_proba_nb, 'NB f1_proba': f1_proba_nb,'NB acc' : acc_nb, 'NB f1' : f1_nb, 
+    'SVM acc' : acc_svm, 'SVM f1' : f1_svm, 'LR acc' : acc_lr, 'LR f1' : f1_lr,
+    'Model acc' : accuracy, 'Model f1' : f1 }
     performance=pd.DataFrame(data=data)
     performance.loc['mean']=performance.mean()
+    performance.loc['max'] = performance.max()
+    performance.loc['min'] = performance.min()
+    performance.loc['median'] = performance.median()
+    performance.loc['std'] = performance.std()
     results.write(performance.to_string())
      
 

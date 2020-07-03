@@ -9,7 +9,7 @@ Collection of Code for a sentiment analysis of EPARs based on single sentences
 # Simple Classifier
 Naive Model which labels everything as Positive 
 
-# SentimentAnalysis
+# SentimentAnalysis_BOW
 Overwiew over the performance of different models
 - Text vectorization via TfidfVectorizer or CountVectorizer
 - Comparison of different models (SVM, kNearestNeighbours, MLP, RandomForest, MultinomialNB/ComplementNB, LogisticRegression)

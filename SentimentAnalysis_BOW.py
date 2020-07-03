@@ -62,17 +62,17 @@ if __name__=='__main__':
     from Dataanalysis import readData_addSentiment
     df=readData_addSentiment()
 
-    vectorizer='count'
+    vectorizer='tfidf'
     scoringparameter='accuracy'
 
     # Set directory for saving
     str1='Reports/'
-    file_results=open(str1+"Results_SentAna_BOW_count_"+scoringparameter+".txt","w")
+    file_results=open(str1+"Results_SentAna_BOW_tfidf2_"+scoringparameter+".txt","w")
 
     col_names=["kNN", "LinSVC", "RF", "MLP", "MNB", "CNB", "LogReg"]
     scores=[]
     traintime=[]
-    for k in range(0,11):
+    for k in range(0,40):
         df=shuffle(df)
         # Extract relevant data
         statements = df["clean_text"]
