@@ -15,16 +15,16 @@ Overwiew over the performance of different models
 - Comparison of different models (SVM, kNearestNeighbours, MLP, RandomForest, MultinomialNB/ComplementNB, LogisticRegression)
 
 # SentimentAnalysis_Word2Vec
-Comparison of TfidfVectorizer/CountVectorizer with Vectorizer based on Google's word2vec
-Requires Google's pretrained list of words available at https://drive.google.com/uc?export=download&id=0B7XkCwpI5KDYNlNUTTlSS21pQmM
+- Comparison of TfidfVectorizer/CountVectorizer with Vectorizer based on Google's word2vec
+- Requires Google's pretrained list of words available at https://drive.google.com/uc?export=download&id=0B7XkCwpI5KDYNlNUTTlSS21pQmM
 - > Results are not better than with simple BOW. These vectorizer is thus thus not pursued any further 
 
 # Grid Search files
 Try to improve most promising models (LinearSVC, MultinomialNB, Logistic Regression) + CountVectorizer via GridSearch
 
 # Final Model
-A combination of all three classifiers with improved Hyperparameters
-Notification in case of unclear classification results possible
+- A combination of all three classifiers with improved Hyperparameters
+- Notification in case of unclear classification results possible
 
 # Reports
 Folder containing data produced by various experiments
