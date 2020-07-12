@@ -109,8 +109,11 @@ if __name__=='__main__':
     # Predict on test set
     prediction_1=pip_nb.predict(stmts_test)
     prediction_1_proba=pip_nb.predict_proba(stmts_test)
+    print(prediction_1_proba)
     prediction_2=pip_svm.predict(stmts_test)
     prediction_3=pip_lr.predict(stmts_test)
+    prediction_3_proba=pip_lr.predict_proba(stmts_test)
+    print(prediction_3_proba)
         
     data = {'NB' : prediction_1, 'SVM' : prediction_2, 'LR' : prediction_3}
     df_pred=pd.DataFrame(data=data)
