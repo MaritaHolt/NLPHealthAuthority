@@ -91,7 +91,7 @@ if __name__=='__main__':
     pip_nb, score_nb = fit_NB(stmts_train, labels_train)
     pip_svm, score_svm = fit_LinSVC(stmts_train, labels_train)
     pip_lr, score_lr = fit_Logreg(stmts_train, labels_train)
-
+    
     # Some Sentences extracted from EPAR on Xarelto without prior label
     data_test = {'Sentence' : ["Gender, race and weight have none or only a small effect on rivaroxaban AUC.", 
     "the use in patients with creatinine clearance <15 ml/min is not recommended.", 
