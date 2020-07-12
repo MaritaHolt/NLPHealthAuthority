@@ -15,10 +15,10 @@ def gridsearch_SVC(stmts_train, stmts_test, labels_train, labels_test, score):
     pipeline= Pipeline(steps=[('vec', vectorizer),('clf', clf)])
 
     param_grid = {
-        'clf__C': [1],
+        'clf__C': [0.1,1,10,100],
         'clf__class_weight': ['balanced', None, {0: 1, 1: 5, 2: 2}],
-        'vec__ngram_range': [(1,2)],
-        'vec__max_df': [0.5]
+        'vec__ngram_range': [(1,1),(1,2),(1,3),(2,2),(2,3),(2,4)],
+        'vec__max_df': [0.3,0.5,0.7,1.0]
     }
 
     
