@@ -25,7 +25,9 @@ Try to improve most promising models (LinearSVC, MultinomialNB, Logistic Regress
 # Final Model
 - A combination of all three classifiers with improved Hyperparameters
 - Notification in case of unclear classification results possible
-
+# Test on Xarelto EPAR
+- Sentences taken from the EPAR on Xarelto are classified after all classifiers are trained on the whole data set
+-> The results for negative sentences are poor. 
 # Reports
 Folder containing data produced by various experiments
 
