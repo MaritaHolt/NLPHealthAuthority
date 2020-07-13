@@ -39,35 +39,23 @@ def fit_Logreg(statements, labels):
 
 # Compare the results of all three classifiers and classify a sentence as 3 (dummy class) if all three classifiers disagree
 def compare(df_pred):
+
+    conditions =[df_pred['NB']==df_pred['SVM'], df_pred['SVM'] == df_pred['LR'], df_pred['NB'] == df_pred['LR'] ] 
+    choices =[df_pred['NB'], df_pred['SVM'], df_pred['NB']]
+    df_pred['Pred']=np.select(conditions, choices, default=3) 
     
-    pred=np.zeros((df_pred.shape[0],1), dtype='i')
-    for i in range(0,len(pred)):
-        if df_pred['NB'][i]==df_pred['SVM'][i]:
-            pred[i]=df_pred['NB'][i]
-        elif df_pred['SVM'][i] == df_pred['LR'][i]:
-            pred[i]=df_pred['SVM'][i]
-        elif df_pred['NB'][i] == df_pred['LR'][i]:
-            pred[i]=df_pred['NB'][i] 
-        else:   
-            pred[i]=3
-       
-        
-    df_pred['Pred']=pred
 
     return df_pred
 
 # Analyze the probability results of the NB classifier and mark a sentence if the highest probability is less than 50%
 def compare2(df_pred, pred):
-    proba_pred=np.zeros((df_pred.shape[0],1), dtype='i')
-    for i in range(0,len(pred)):
-        if max(pred[i])<0.5:
-            proba_pred[i]=3
-        else:
-            proba_pred[i]=df_pred['NB'][i]
-
-    df_pred['Proba']=proba_pred
-
+    maxpred=[max(proba) for proba in pred]
+    maxasarray=np.array(maxpred)
+    df_pred['Proba']=np.where(maxasarray <0.5, 3, df_pred['NB'])
+    
     return df_pred
+
+
 
 
 
@@ -81,7 +69,7 @@ if __name__=='__main__':
     # Set directory for saving
     str1='Reports/'
     results=open(str1+"Results_SentAna.txt","w")
-    
+    prediction_results=open(str1+"Predictions.txt","w")
     accuracy=[]
     acc_proba_nb=[]
     f1_proba_nb=[]
@@ -94,6 +82,7 @@ if __name__=='__main__':
     f1_nb=[]
     f1_svm=[]
     f1_lr=[]
+    flag = True
     for k in range(0,400):
         df=shuffle(df)
         # Extract relevant data
@@ -114,12 +103,15 @@ if __name__=='__main__':
         prediction_2=pip_svm.predict(stmts_test)
         prediction_3=pip_lr.predict(stmts_test)
         
-        data = {'NB' : prediction_1, 'SVM' : prediction_2, 'LR' : prediction_3}
+        data = {'Label': labels_test, 'NB' : prediction_1, 'SVM' : prediction_2, 'LR' : prediction_3}
+        
         df_pred=pd.DataFrame(data=data)
                    
         # Two different approaches for unclear instances
         df_pred = compare(df_pred)
         df_pred = compare2(df_pred, prediction_1_proba)
+
+        
         
         # Evaluate performance
         acc_proba_nb.append(accuracy_score(labels_test, df_pred['Proba']))
@@ -137,33 +129,37 @@ if __name__=='__main__':
         accuracy.append(accuracy_score(labels_test, df_pred['Pred']))
         f1.append(f1_score(labels_test, df_pred['Pred'], average='weighted'))
 
-       
+        
         # only for visualization of interesting settings
-        #if (not (df_pred.loc[df_pred['Proba']==3].empty)) and k<50:
-        #    cf = confusion_matrix(labels_test,df_pred['Pred'])
-        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
-        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_overall"+str(k)+".png")
-        #    plt.clf()
+        if ((not (df_pred.loc[df_pred['Proba']==3].empty)) and (not (df_pred.loc[df_pred['Pred']==3].empty)) and flag and f1_score(labels_test, df_pred['Pred'], average='weighted')>0.7):
+            cf = confusion_matrix(labels_test,df_pred['Pred'])
+            sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+            sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_overall"+str(k)+".png")
+            plt.clf()
+        
+            cf = confusion_matrix(labels_test,df_pred['NB'])
+            sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+            sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_NB"+str(k)+".png")
+            plt.clf()
 
-        #    cf = confusion_matrix(labels_test,df_pred['NB'])
-        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
-        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_NB"+str(k)+".png")
-        #    plt.clf()
+            cf = confusion_matrix(labels_test,df_pred['Proba'])
+            sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+            sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_Proba"+str(k)+".png")
+            plt.clf()
 
-        #    cf = confusion_matrix(labels_test,df_pred['Proba'])
-        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
-        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_Proba"+str(k)+".png")
-        #    plt.clf()
+            cf = confusion_matrix(labels_test,df_pred['LR'])
+            sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+            sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_LR"+str(k)+".png")
+            plt.clf()
 
-        #    cf = confusion_matrix(labels_test,df_pred['LR'])
-        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
-        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_LR"+str(k)+".png")
-        #    plt.clf()
+            cf = confusion_matrix(labels_test,df_pred['SVM'])
+            sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
+            sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_SVM"+str(k)+".png")
+            plt.clf()
 
-        #    cf = confusion_matrix(labels_test,df_pred['SVM'])
-        #    sns_plot = sns.heatmap(cf, cmap="Blues", annot=True, fmt='g')
-        #    sns_plot.get_figure().savefig("Reports/Heatmap_FinalModel_SVM"+str(k)+".png")
-        #    plt.clf()
+            prediction_results.write(df_pred.to_string())
+
+            flag = False
        
 
         

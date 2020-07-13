@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 from sklearn.utils import shuffle
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB, ComplementNB
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score, f1_score
 
@@ -11,14 +11,15 @@ from sklearn.pipeline import Pipeline
 
 def gridsearch_NB(stmts_train, stmts_test, labels_train, labels_test, score):
     vectorizer = CountVectorizer() 
-    clf = MultinomialNB()
+    clf = ComplementNB()
     pipeline= Pipeline(steps=[('vec', vectorizer),('clf', clf)])
 
     param_grid = {
         'clf__alpha': np.linspace(0.5, 1.5, 6),
         'clf__fit_prior': [True, False],
         'vec__ngram_range': [(1,1),(1,2),(1,3),(2,2),(2,3)],
-        'vec__max_df': [0.3,0.5,0.7,1.0]
+        'vec__max_df': [0.1,0.2,0.3,0.5,0.7],
+        'vec__max_features': [None, 1000, 2000, 500]
     }
 
     

@@ -113,7 +113,7 @@ if __name__ == "__main__":
     #print(len(neutral_sent_stmts))
 
     # Word frequency analysis
-    #frequenceVisualization(df['clean_text'])
+    frequenceVisualization(df['clean_text'])
     #frequenceVisualization(positive_sent_stmts)
     #frequenceVisualization(negative_sent_stmts)
     #frequenceVisualization(neutral_sent_stmts)
