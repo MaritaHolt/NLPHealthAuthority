@@ -51,7 +51,7 @@ def readData_addSentiment():
     
     # Read data
     df=pd.read_excel('../sentences_with_sentiment.xlsx')
-    df=df.drop(columns=['ID'])
+    
      
 
     # Add an additional column Sentiment (Positive== 0, Negative == 1, Neutral == 2)
@@ -76,7 +76,7 @@ def readData_addSentiment():
 
 def frequenceVisualization(statements):
     from nltk.probability import FreqDist 
-    import matplotlib.pyplot as plt
+    
 
     fd_pos = FreqDist()
     for statement in statements:
@@ -91,8 +91,7 @@ def frequenceVisualization(statements):
     fd_pos.plot(20)
 
 def countplot():
-    import seaborn as sns
-    import matplotlib.pyplot as plt 
+    
     cntplt = sns.countplot(x='Sentiment', data=df, color='blue')
     cntplt.set_xticklabels(["Positive","Negative","Neutral"])
     cntplt.get_figure().savefig("Countplot.png")

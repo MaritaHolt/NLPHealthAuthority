@@ -44,7 +44,7 @@ if __name__=='__main__':
     for score in ['accuracy', 'f1_weighted']:
         file_results.write(score+"\n")
         results=[]
-        for k in range(0,100):
+        for k in range(0,10):
             df=shuffle(df)
             # Extract relevant data
             statements = df["clean_text"]

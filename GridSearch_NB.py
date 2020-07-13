@@ -1,24 +1,22 @@
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+
 from sklearn.utils import shuffle
-from sklearn.naive_bayes import MultinomialNB, ComplementNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score
 
 from sklearn.pipeline import Pipeline
 
 def gridsearch_NB(stmts_train, stmts_test, labels_train, labels_test, score):
     vectorizer = CountVectorizer() 
-    clf = ComplementNB()
+    clf = MultinomialNB()
     pipeline= Pipeline(steps=[('vec', vectorizer),('clf', clf)])
 
     param_grid = {
         'clf__alpha': np.linspace(0.5, 1.5, 6),
         'clf__fit_prior': [True, False],
-        'clf__norm': [True, False],
         'vec__ngram_range': [(1,1),(1,2),(1,3),(2,2),(2,3)],
         'vec__max_df': [0.3,0.5,0.7,1.0]
     }
@@ -28,12 +26,7 @@ def gridsearch_NB(stmts_train, stmts_test, labels_train, labels_test, score):
     gscv.fit(stmts_train,labels_train)
     
     predictions=gscv.predict(stmts_test)
-    #cf = confusion_matrix(labels_test,predictions)
-    #sns_plot = sns.heatmap(cf, cmap="GnBu", annot=True, fmt='g')
-    #sns_plot.get_figure().savefig(directoryforsaving+"Heatmap"+vectorizer.__class__.__name__ +clf.__class__.__name__+".png")
-    #plt.show()
     
-    #print(gscv.predict_proba(stmts_test))
     return gscv.best_score_, gscv.best_params_, accuracy_score(labels_test,predictions), f1_score(labels_test, predictions, average='weighted')
         
    
@@ -44,7 +37,7 @@ if __name__=='__main__':
     # Set directory for saving
     str1='Reports/'
     # Store results to txt
-    file_results=open(str1+"Results_GridSearch_CNB.txt","w")
+    file_results=open(str1+"Results_GridSearch_NB.txt","w")
     # Read data
     from Dataanalysis import readData_addSentiment
     df=readData_addSentiment()
@@ -53,7 +46,7 @@ if __name__=='__main__':
     for score in ['accuracy', 'f1_weighted']:
         file_results.write(score+"\n")
         results=[]
-        for k in range(0,11):
+        for k in range(0,10):
             df=shuffle(df)
             # Extract relevant data
             statements = df["clean_text"]

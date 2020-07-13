@@ -36,7 +36,7 @@ if __name__=='__main__':
     # Set directory for saving
     str1='Reports/'
     # Store results to txt
-    file_results=open(str1+"Results_GridSearch_LinSVC_count2.txt","w")
+    file_results=open(str1+"Results_GridSearch_LinSVC.txt","w")
     # Read data
     from Dataanalysis import readData_addSentiment
     df=readData_addSentiment()
@@ -55,10 +55,10 @@ if __name__=='__main__':
             scoregscv, param, test_acc, test_f1 = gridsearch_SVC(stmts_train, stmts_test, labels_train, labels_test, score)
             results.append([ scoregscv,test_acc,test_f1, param])
         
-            #file_results.write("Best score: "+str(scoregscv)+", beastparams: "+ str(param)+ ", test_acc: "+ str(test_acc)+", test_f1: "+str(test_f1)+"\n")
+            
         
         result=pd.DataFrame(results, columns=col_names)
-        #result.loc['mean'] = result['res_gscv', 'test_acc', 'test_f1'].mean()
+       
         file_results.write(result.to_string()+ "\n")
 
 
