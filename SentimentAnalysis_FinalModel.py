@@ -47,7 +47,7 @@ def compare(df_pred):
 
     return df_pred
 
-# Analyze the probability results of the NB classifier and mark a sentence if the highest probability is less than 50%
+# Analyze the probability results of the NB classifier and mark a sentence if the highest probability is less than 60%
 def compare2(df_pred, pred):
     maxpred=[max(proba) for proba in pred]
     maxasarray=np.array(maxpred)
