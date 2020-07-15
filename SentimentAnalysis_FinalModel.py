@@ -51,7 +51,7 @@ def compare(df_pred):
 def compare2(df_pred, pred):
     maxpred=[max(proba) for proba in pred]
     maxasarray=np.array(maxpred)
-    df_pred['Proba']=np.where(maxasarray <0.5, 3, df_pred['NB'])
+    df_pred['Proba']=np.where(maxasarray <0.6, 3, df_pred['NB'])
     
     return df_pred
 

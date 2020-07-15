@@ -27,6 +27,6 @@ Try to improve most promising models (LinearSVC, MultinomialNB, Logistic Regress
 - Notification in case of unclear classification results possible
 
 # Interpretation
-- Tested ELI5 for NB on some sentences 
+- Tested ELI5 for NB on some sentences: Visualization is only possible in a Jupyter Notebook
 
 

@@ -59,8 +59,8 @@ if __name__=='__main__':
     from Dataanalysis import readData_addSentiment
     df=readData_addSentiment()
 
-    vectorizer='tfidf'
-    scoringparameter='accuracy'
+    vectorizer='tfidf' # 'count'
+    scoringparameter='accuracy' #'f1_weighted'
 
     # Set directory for saving
     str1='Reports/'

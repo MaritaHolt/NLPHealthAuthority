@@ -68,7 +68,7 @@ if __name__=='__main__':
     df=readData_addSentiment()
 
     
-    scoringparameter='f1_weighted'
+    scoringparameter='f1_weighted' #'accuracy'
 
     # Set directory for saving
     str1='Reports/'
@@ -77,7 +77,7 @@ if __name__=='__main__':
     col_names=["LinSVC", "RF", "MLP", "LogReg"] #"kNN", 
     scores=[]
     traintime=[]
-    for k in range(0,6):
+    for k in range(0,1):
         df=shuffle(df)
         # Extract relevant data
         statements = df["clean_text"]
