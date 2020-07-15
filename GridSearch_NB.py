@@ -11,7 +11,7 @@ from sklearn.pipeline import Pipeline
 
 def gridsearch_NB(stmts_train, stmts_test, labels_train, labels_test, score):
     vectorizer = CountVectorizer() 
-    clf = ComplementNB()
+    clf = MultinomialNB()
     pipeline= Pipeline(steps=[('vec', vectorizer),('clf', clf)])
 
     param_grid = {
